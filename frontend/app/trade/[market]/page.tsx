@@ -1,12 +1,35 @@
 "use client";
+// import { MarketBar } from "@/app/components/MarketBar";
+// import { SwapUI } from "@/app/components/SwapUI";
+// import { TradeView } from "@/app/components/TradeView";
+import { Depth } from "@/app/components/depth/Depth";
 import { useParams } from "next/navigation";
 
 export default function Page() {
     const { market } = useParams();
 
-    return <div className="flex flex-row flex-1">
-        <div className="flex flex-col justify-center items-center flex-1 pt-[100px]">
-            Trade {market} page
+    return <div className="flex flex-row flex-1 text-white">
+        <div className="flex flex-col flex-1">
+            {/* <MarketBar market={market as string} /> */}
+            marketbar
+            <div className="flex flex-row h-[620px] border-y border-slate-800">
+                <div className="flex flex-col flex-1">
+                    {/* <TradeView market={market as string} /> */}
+                    tradeview
+                </div>
+                <div className="w-[1px] flex-col border-slate-800 border-l"></div>
+                <div className="flex flex-col w-[250px] overflow-hidden">
+                    <Depth market={market as string} /> 
+                    depth
+                </div>
+            </div>
+        </div>
+        <div className="w-[1px] flex-col border-slate-800 border-l"></div>
+        <div>
+            <div className="flex flex-col w-[250px]">
+                {/* <SwapUI market={market as string} /> */}
+                swapui
+            </div>
         </div>
     </div>
 }
