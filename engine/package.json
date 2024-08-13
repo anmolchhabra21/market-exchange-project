@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@types/redis": "^4.0.11",
+    "redis": "^4.7.0"
+  }
+}
