@@ -1,12 +1,4 @@
-
-export interface Order {
-    price: number;
-    quantity: number;
-    orderId: string;
-    filled: number;
-    side: "buy" | "sell";
-    userId: string;
-}
+import { Order } from "./orderbook";
 
 export const CREATE_ORDER = "CREATE_ORDER";
 export const CANCEL_ORDER = "CANCEL_ORDER";
