@@ -1,10 +1,13 @@
 {
-  "name": "websocketservice",
+  "dependencies": {
+    "typescript": "^5.5.4"
+  },
+  "name": "mmaker",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "devDependencies": {},
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc",
     "start": "node dist/index.js",
     "dev": "npm run build && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,11 +15,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "typescript": "^5.5.4",
-    "ws": "^8.18.0"
-  },
-  "devDependencies": {
-    "@types/ws": "^8.5.12"
-  }
+  "description": ""
 }
