@@ -15,7 +15,9 @@ app.use("/api/v1/depth", depthRouter);
 app.use("/api/v1/trades", tradesRouter);
 app.use("/api/v1/klines", klineRouter);
 app.use("/api/v1/tickers", tickersRouter);
-
+app.use("/api/v1/health", (req, res) => {
+    res.json({ status: "ok" });
+});
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
