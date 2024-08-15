@@ -1,5 +1,6 @@
 import fs from "fs";
 import { RedisManager } from "../RedisManager";
+import { ORDER_UPDATE, TRADE_ADDED } from "../types/index";
 import { CANCEL_ORDER, CREATE_ORDER, GET_DEPTH, GET_OPEN_ORDERS, MessageFromApi, ON_RAMP } from "../types/fromApi";
 import { Fill, Order } from "../types/orderbook";
 import { Orderbook } from "../trade/Orderbook";
@@ -99,10 +100,10 @@ export class Engine {
         }
         
         const { fills, executedQty } = orderbook.addOrder(order);
-        // this.updateBalance(userId, baseAsset, quoteAsset, side, fills, executedQty);
+        this.updateBalance(userId, baseAsset, quoteAsset, side, fills, executedQty);
 
         // this.createDbTrades(fills, market, userId);
-        // this.updateDbOrders(order, executedQty, fills, market);
+        this.updateDbOrders(order, executedQty, fills, market);
         // this.publisWsDepthUpdates(fills, price, side, market);
         // this.publishWsTrades(fills, userId, market);
         return { executedQty, fills, orderId: order.orderId };
@@ -129,5 +130,107 @@ export class Engine {
             //@ts-ignore
             this.balances.get(userId)[baseAsset].locked = this.balances.get(userId)?.[baseAsset].locked + Number(quantity);
         }
+    }
+
+    updateDbOrders(order: Order, executedQty: number, fills: Fill[], market: string) {
+        RedisManager.getInstance().pushMessage({
+            type: ORDER_UPDATE,
+            data: {
+                orderId: order.orderId,
+                executedQty: executedQty,
+                market: market,
+                price: order.price.toString(),
+                quantity: order.quantity.toString(),
+                side: order.side,
+            }
+        });
+
+        fills.forEach(fill => {
+            RedisManager.getInstance().pushMessage({
+                type: ORDER_UPDATE,
+                data: {
+                    orderId: fill.markerOrderId,
+                    executedQty: fill.qty
+                }
+            });
+        });
+    }
+
+    updateBalance(userId: string, baseAsset: string, quoteAsset: string, side: "buy" | "sell", fills: Fill[], executedQty: number) {
+        if (side === "buy") {
+            fills.forEach(fill => {
+                // Update quote asset balance
+                //@ts-ignore
+                this.balances.get(fill.otherUserId)[quoteAsset].available = this.balances.get(fill.otherUserId)?.[quoteAsset].available + (fill.qty * fill.price);
+
+                //@ts-ignore
+                this.balances.get(userId)[quoteAsset].locked = this.balances.get(userId)?.[quoteAsset].locked - (fill.qty * fill.price);
+
+                // Update base asset balance
+
+                //@ts-ignore
+                this.balances.get(fill.otherUserId)[baseAsset].locked = this.balances.get(fill.otherUserId)?.[baseAsset].locked - fill.qty;
+
+                //@ts-ignore
+                this.balances.get(userId)[baseAsset].available = this.balances.get(userId)?.[baseAsset].available + fill.qty;
+
+            });
+            
+        } else {
+            fills.forEach(fill => {
+                // Update quote asset balance
+                //@ts-ignore
+                this.balances.get(fill.otherUserId)[quoteAsset].locked = this.balances.get(fill.otherUserId)?.[quoteAsset].locked - (fill.qty * fill.price);
+
+                //@ts-ignore
+                this.balances.get(userId)[quoteAsset].available = this.balances.get(userId)?.[quoteAsset].available + (fill.qty * fill.price);
+
+                // Update base asset balance
+
+                //@ts-ignore
+                this.balances.get(fill.otherUserId)[baseAsset].available = this.balances.get(fill.otherUserId)?.[baseAsset].available + fill.qty;
+
+                //@ts-ignore
+                this.balances.get(userId)[baseAsset].locked = this.balances.get(userId)?.[baseAsset].locked - (fill.qty);
+
+            });
+        }
+    }
+
+
+    // some users need to have a lot of rupees
+    setBaseBalances() {
+        this.balances.set("1", {
+            [BASE_CURRENCY]: {
+                available: 10000000,
+                locked: 0
+            },
+            "TATA": {
+                available: 10000000,
+                locked: 0
+            }
+        });
+
+        this.balances.set("2", {
+            [BASE_CURRENCY]: {
+                available: 10000000,
+                locked: 0
+            },
+            "TATA": {
+                available: 10000000,
+                locked: 0
+            }
+        });
+
+        this.balances.set("5", {
+            [BASE_CURRENCY]: {
+                available: 10000000,
+                locked: 0
+            },
+            "TATA": {
+                available: 10000000,
+                locked: 0
+            }
+        });
     }
 }
