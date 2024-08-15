@@ -1,7 +1,8 @@
 import fs from "fs";
 import { RedisManager } from "../RedisManager";
 import { CANCEL_ORDER, CREATE_ORDER, GET_DEPTH, GET_OPEN_ORDERS, MessageFromApi, ON_RAMP } from "../types/fromApi";
-import { Fill, Order, Orderbook } from "./Orderbook";
+import { Fill, Order } from "../types/orderbook";
+import { Orderbook } from "../trade/Orderbook";
 
 //TODO: Avoid floats everywhere, use a decimal similar to the PayTM project for every currency
 export const BASE_CURRENCY = "INR";
