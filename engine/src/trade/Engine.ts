@@ -182,7 +182,6 @@ export class Engine {
         const orderbook = this.orderbooks.find(o => o.ticker() === market)
         const baseAsset = market.split("_")[0];
         const quoteAsset = market.split("_")[1];
-        console.log("orderbook", orderbook, baseAsset, quoteAsset);
 
         if (!orderbook) {
             throw new Error("No orderbook found");
@@ -296,7 +295,7 @@ export class Engine {
             return;
         }
         const depth = orderbook.getDepth();
-        if (side === "buy") {   
+        if (side === "buy") {
             const updatedAsks = depth?.asks.filter(x => fills.map(f => f.price).includes(x[0].toString()));
             const updatedBid = depth?.bids.find(x => x[0] === price);
             console.log("publish ws depth updates")
