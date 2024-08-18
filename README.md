@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+</p>
+  <h3 align="center">Market-Exchange Project</h3>
+  <p align="center">
+This is an Implementation of how an Exchange Architecture works.
+  </p>
+
+## About the Project
+
+Currently, this supports one market, TATA_INR, To reduce latency, all the transactions happen in memory/single node process without directly updating the database. However, snapshots are taken at some intervals (3s) to prevent the entries from being deleted, and we can also replay the events using a queue in case the main engine process ever goes down. For every transaction or order completed/canceled, a WebSocket Server emits these events(ticker/price) displayed on the frontend. I have tried to handle complex, asynchronous, and socket tasks using a scalable class-based Singleton Approach.
+
+### Features
+- Minimal Latency
+- Real-time updates on orderbook, price and ticker
+- Scalable Pub-Sub Service
+- Redis queue for replaying after the last snapshot for recovery
+- Executed quantity as the response to the user immediately after placing the order
+- mMaker(Market Maker) service to emulate traffic
+- Built as per standard Binance API Documentation
+
+### Built With
+- Next.js
+- Typescript
+- Redis
+- Timescaledb
+- WebSocket
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node JS & npm/nvm
+- Typescript
+- Docker (Other services can be installed directly or with Docker)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+#### There are multiple processes/services in the repository: 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+  - **`docker-compose`:** Running Redis and timescaledb images.
+  - **`api`:** The main API and routing service:
+  - **`engine`:** Central process, pulling and Executing orders from the queue, updating back to the user, and publishing to WebSocket server.
+  - **`webSocketService`:** Scalable Pub-Sub service, ensuring proper subscription and removal logic for sockets.
+  - **`frontend`:** Next.js frontend for the Exchange.
+  - **`mMaker`:** Emulating traffic by randomly placing and canceling orders on the order-book.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation & usage
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Clone the repo
 
-## Learn More
+- Start the dependencies, you can use the docker-compose to setup:
 
-To learn more about Next.js, take a look at the following resources:
+  ```bash
+  docker-compose up -d
+  ```
+- You can check if all the services (ElasticSearch, Zookeeper, Kafka) are up and running by
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+  ```bash
+  docker ps
+  ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+-  To get any service running(say frontend), open a terminal: 
+    ```bash
+    cd frontend
+    npm i 
+    npm run dev
+  
+    # The running port will be displayed in the terminal.
+    ```
+- This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
