@@ -1,12 +1,13 @@
-</p>
   <h3 align="center">Market-Exchange Project</h3>
   <p align="center">
 This is an Implementation of how an Exchange Architecture works.
   </p>
 
+
 ## About the Project
 
 Currently, this supports one market, TATA_INR, To reduce latency, all the transactions happen in memory/single node process without directly updating the database. However, snapshots are taken at some intervals (3s) to prevent the entries from being deleted, and we can also replay the events using a queue in case the main engine process ever goes down. For every transaction or order completed/canceled, a WebSocket Server emits these events(ticker/price) displayed on the frontend. I have tried to handle complex, asynchronous, and socket tasks using a scalable class-based Singleton Approach.
+![Architecture](https://github.com/anmolchhabra21/market-exchange-project/blob/main/frontend/public/images/Architecture.png)
 
 ### Features
 - Minimal Latency
